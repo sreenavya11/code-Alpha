@@ -1,0 +1,129 @@
+============================================================
+STEP 1: DATA STRUCTURE
+============================================================
+Shape: 5015 rows, 13 columns
+
+Column types:
+order_id                       str
+order_date          datetime64[us]
+category                       str
+region                         str
+customer_segment               str
+ship_mode                      str
+unit_price                 float64
+quantity                     int64
+discount                   float64
+sales                      float64
+profit                     float64
+customer_age               float64
+customer_rating            float64
+dtype: object
+
+First 3 rows:
+    order_id order_date     category   region customer_segment ship_mode  unit_price  quantity  discount    sales  profit  customer_age  customer_rating
+0  ORD100000 2023-04-13       Beauty    North        Corporate  Standard       56.27         7      0.00   393.89  118.17          41.0              4.4
+1  ORD100001 2023-12-10       Beauty    North         Consumer  Standard       39.99         6      0.05   227.94   59.26          42.0              3.4
+2  ORD100002 2024-11-12  Electronics  Central         Consumer  Standard      761.14         4      0.10  2740.10  109.60          20.0              NaN
+
+============================================================
+STEP 2: DATA QUALITY CHECK
+============================================================
+Missing values:
+customer_age       141
+customer_rating    280
+dtype: int64
+
+Duplicate rows: 15
+Unique order_ids vs total rows: 5000 / 5015
+
+============================================================
+STEP 3: CLEANING
+============================================================
+Removed 15 duplicate rows.
+Filled missing customer_age / customer_rating with column median.
+
+============================================================
+STEP 4: SUMMARY STATISTICS
+============================================================
+       unit_price  quantity  discount    sales   profit  customer_age  customer_rating
+count     5000.00   5000.00   5000.00  5000.00  5000.00       5000.00          5000.00
+mean       239.52      3.97      0.09   869.30    76.02         43.70             4.08
+std        287.10      1.98      0.08  1241.10   127.31         14.69             0.69
+min          5.00      1.00      0.00     3.88  -853.74         18.00             1.00
+25%         51.34      2.00      0.00   142.51    11.23         32.00             3.60
+50%        116.06      4.00      0.05   376.38    40.00         44.00             4.10
+75%        294.64      6.00      0.15   984.76   104.58         56.00             4.60
+max       1198.53      7.00      0.35  7949.69   953.96         69.00             5.00
+
+Categorical value counts:
+
+category:
+category
+Electronics       1247
+Clothing          1007
+Home & Kitchen     889
+Beauty             648
+Books              629
+Sports             580
+
+region:
+region
+South      1167
+North      1063
+East       1057
+West        904
+Central     809
+
+customer_segment:
+customer_segment
+Consumer       2688
+Corporate      1429
+Home Office     883
+
+ship_mode:
+ship_mode
+Standard    2977
+Express     1493
+Same Day     530
+
+============================================================
+STEP 5: HYPOTHESES / QUESTIONS
+============================================================
+
+H1: Does discount reduce profit? Correlation(discount, profit) = -0.48
+  -> Supported: negative correlation, higher discounts reduce profit.
+
+H2: Which category has the highest average order value?
+category
+Electronics       2243.06
+Home & Kitchen     770.29
+Sports             593.74
+Clothing           297.30
+Beauty             228.59
+Books              115.67
+
+H3: Shipping mode preference by segment (% of orders):
+ship_mode         Express  Same Day  Standard
+customer_segment                             
+Consumer             29.4      10.5      60.2
+Corporate            29.9      11.0      59.1
+Home Office          31.4      10.4      58.2
+
+H4: Average customer rating by category:
+category
+Beauty            4.13
+Home & Kitchen    4.09
+Books             4.09
+Electronics       4.08
+Clothing          4.05
+Sports            4.01
+
+============================================================
+STEP 6: OUTLIER / ANOMALY DETECTION
+============================================================
+Sales outliers (IQR method): 524 rows (10.5% of data)
+Valid sales range (non-outlier): -1120.88 to 2248.15
+
+Orders with negative profit: 352 (7.0%)
+
+Diagnostic plot saved to charts/eda_diagnostics.png
